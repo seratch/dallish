@@ -4,19 +4,17 @@ Dallish is an extended [Dalli](https://github.com/mperham/dalli) for memcached 1
 
 ## Note
 
-Dallish is slower than Dalli, so just use as a tool for debugging or management.
+Dallish is slower than Dalli. Just use as a tool for debugging or management.
 
-Unfortunately, the methods by Dallish won't work with memcached 1.6 or higher.
+The methods by Dallish won't work with memcached 1.6 or higher.
 
 ## How to use?
-
-First, get Dallish.
 
 ```
 gem install dallish
 ```
 
-And then, try it as follows.
+Try it out as follows.
 
 ```ruby
 require 'dallish'
