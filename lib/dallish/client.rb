@@ -27,7 +27,7 @@ module Dallish
 
       # cannot support memcached 1.6 or higher
       self.servers.each { |server|
-        version = telnet(server, :prompt => /\n/).cmd('version')
+        version = telnet_connect(server, :prompt => /\n/).cmd('version')
         self.log.debug "version: #{version}"
 
         /VERSION (?<major_version>\d+\.\d+).*/ =~ version
@@ -37,10 +37,10 @@ module Dallish
       }
     end
 
-    def telnet(server, options = {})
+    def telnet_connect(server, options = {})
       (host, port) = server.split(':')
       self.log.debug "target memcahced server: #{host}:#{port}"
-      telnet = Net::Telnet::new(
+      Net::Telnet::new(
           'Host' => host,
           'Port' => port,
           'Prompt' => options[:prompt] || /(^END$)/,
@@ -50,7 +50,7 @@ module Dallish
 
     def all_keys()
       self.servers.flat_map { |server|
-        telnet = telnet(server)
+        telnet = telnet_connect(server)
         begin
           slab_ids = telnet.cmd("stats slabs").split("\n").map { |line|
             /STAT (?<slab_id>\d+):.+/ =~ line
@@ -58,7 +58,7 @@ module Dallish
           }.reject { |e| e.nil? }.uniq
 
           slab_ids.flat_map { |slab_id|
-            telnet.cmd("stats cachedump #{slab_id} 1000000").split("\n").map { |line|
+            telnet.cmd("stats cachedump #{slab_id} 10000000").split("\n").map { |line|
               /ITEM (?<key>.+) \[\d+ b; \d+ s\]/ =~ line
               key
             }
@@ -73,17 +73,14 @@ module Dallish
     end
 
     def find_keys_by(regexp)
-      all_keys.select { |key|
-        if key.is_a?(Array) then
-          puts "#{key},#{key.class}"
-        end
-        regexp.match(key) }
+      all_keys.select { |key| regexp.match(key) }
     end
 
     def delete_all_by(regexp)
       find_keys_by(regexp).each do |key|
         self.dalli.delete(key)
       end
+      nil
     end
 
     def find_all_by(regexp)

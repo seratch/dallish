@@ -18,7 +18,8 @@ module Dallish
 
   def self.is_the_arg_dalli_servers(params_or_dalli_servers)
     params_or_dalli_servers and
-    (params_or_dalli_servers.is_a?(String) or params_or_dalli_servers.is_a?(Array))
+        (params_or_dalli_servers.is_a?(String) or
+            params_or_dalli_servers.is_a?(Array))
   end
 
 end
