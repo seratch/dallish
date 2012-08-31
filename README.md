@@ -44,3 +44,4 @@ dallish.delete_all_by(/foo.+/)
 ## License
 
 The MIT License
+
